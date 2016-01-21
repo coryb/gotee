@@ -12,6 +12,10 @@ func ExampleNewTee() {
 		fmt.Printf("ERROR: tee: %s\n", err)
 		return
 	}
+	// you can write headers, dates etc just to the
+	// tee file if necessary
+	fmt.Fprintf(tee.OrigStdout, "write to stdout but not tee file\n")
+	fmt.Fprintf(tee.TeeFile, "test to tee file\n")
 	fmt.Fprintf(os.Stderr, "test to stderr\n")
 	fmt.Printf("test to stdout\n")
 	tee.Close()
@@ -21,9 +25,11 @@ func ExampleNewTee() {
 	fmt.Printf("teed output:\n%s", teed)
 
 	// Output:
+	// write to stdout but not tee file
 	// test to stdout
 	// more to stdout
 	// teed output:
+	// test to tee file
 	// test to stderr
 	// test to stdout
 }

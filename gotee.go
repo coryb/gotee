@@ -9,11 +9,11 @@ import (
 
 type Tee struct {
 	wg         *sync.WaitGroup
-	origStdout *os.File
-	origStderr *os.File
-	stdoutWrite *os.File
-	stderrWrite *os.File
-	file       *os.File
+	OrigStdout *os.File
+	OrigStderr *os.File
+	Stdout *os.File
+	Stderr *os.File
+	TeeFile       *os.File
 }
 
 func NewTee(filename string) (*Tee, error) {
@@ -85,26 +85,26 @@ func NewTee(filename string) (*Tee, error) {
 }
 
 func (t *Tee) Sync() {
-	t.stdoutWrite.Sync()
-	t.stderrWrite.Sync()
-	t.file.Sync()
-	t.origStdout.Sync()
-	t.origStderr.Sync()
+	t.Stdout.Sync()
+	t.Stderr.Sync()
+	t.TeeFile.Sync()
+	t.OrigStdout.Sync()
+	t.OrigStderr.Sync()
 }
 
 func (t *Tee) Close() {
 	// close write end of pipes so
 	// readers will finish up
-	t.stdoutWrite.Close()
-	t.stderrWrite.Close()
+	t.Stdout.Close()
+	t.Stderr.Close()
 
 	// wait for go routines to close
 	t.wg.Wait()
 
 	// close out tee file
-	t.file.Close()
+	t.TeeFile.Close()
 
 	// restore stdio to the original
-	os.Stdout = t.origStdout
-	os.Stderr = t.origStderr
+	os.Stdout = t.OrigStdout
+	os.Stderr = t.OrigStderr
 }
